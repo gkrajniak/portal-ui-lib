@@ -2,7 +2,14 @@ import type { Locator, Page } from '@playwright/test';
 
 const luigiWebComponentTagPrefix = 'luigi-wc-';
 
+export interface NavigationNode {
+  pathSegment: string;
+  label: string;
+}
+
 export class PortalShell {
+  static readonly selectedNavigationItemClass = /\bis-selected\b/;
+
   readonly alert: Locator;
   private readonly page: Page;
 
@@ -11,7 +18,11 @@ export class PortalShell {
     this.alert = page.getByTestId('luigi-alert');
   }
 
-  navigationItem(pathSegment: string, label: string): Locator {
+  async open(): Promise<void> {
+    await this.page.goto('/');
+  }
+
+  navigationItem({ pathSegment, label }: NavigationNode): Locator {
     return this.page.getByTestId(`${pathSegment}_${label}`.toLowerCase());
   }
 

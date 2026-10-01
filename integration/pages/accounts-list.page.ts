@@ -1,17 +1,18 @@
+import type { NavigationNode } from './portal-shell.ts';
 import type { Locator, Page } from '@playwright/test';
 
 export class AccountsListPage {
   static readonly path = '/home/accounts';
   static readonly viewName = 'generic-list-view';
+  static readonly navigation: NavigationNode = {
+    pathSegment: 'accounts',
+    label: 'Accounts',
+  };
 
   private readonly page: Page;
 
   constructor(page: Page) {
     this.page = page;
-  }
-
-  async open(): Promise<void> {
-    await this.page.goto(AccountsListPage.path);
   }
 
   accountRow(accountName: string): Locator {

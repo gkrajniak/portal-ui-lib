@@ -57,7 +57,7 @@ integration/
 │   ├── gateway-request.ts        # identifies the GraphQL operation and account of a request
 │   └── portal-backend-mock.ts    # routes requests to mocks, per-account overrides, request log
 ├── fixtures/portal-test.ts       # `test` with the `portalBackend` fixture
-├── pages/                        # page objects (shell, accounts list, account dashboard, error page)
+├── pages/                        # page objects (shell, overview, accounts list, account dashboard, error page)
 └── tests/<setup-name>/           # specs, grouped by the portal setup they run against
 ```
 
@@ -149,18 +149,18 @@ To see what the portal really requests for a flow, write a temporary spec in `te
 
 ## Verified behavior covered by the tests
 
-Navigation starts on `/home/accounts` and opens `account-gamma` by clicking its row. Sequence for an account: `AccountInfo` read → `/rest/config/core_platform-mesh_io_account?...` → `Account` read in the dashboard (`generic-detail-view`).
+Every test starts like a user: it opens `/`, which lands on `/home/overview` with the Overview nav item selected (no web component, no backend call), clicks the Accounts nav item, and opens `account-gamma` by clicking its row. Back navigation is checked twice: back to the accounts list, then back to the overview. Sequence for an account: `AccountInfo` read → `/rest/config/core_platform-mesh_io_account?...` → `Account` read in the dashboard (`generic-detail-view`).
 
-| Failing call | Response                                       | Expected UI (current behavior)                                                                              | Back button |
-| ------------ | ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | ----------- |
-| AccountInfo  | HTTP 404                                       | `/error/404`, only the error view, no side nav, no alert; account children and Account read never requested | list        |
-| AccountInfo  | GraphQL error with "forbidden"                 | `/error/403`, same as above                                                                                 | list        |
-| AccountInfo  | HTTP 403 status, HTTP 500, other GraphQL error | alert `Failed to read account info.` + error detail; dashboard still renders                                | list        |
-| Account      | HTTP 404 / GraphQL "forbidden"                 | `/error/404` / `/error/403`, only the error view, no alert (dashboard history entry replaced)               | list        |
-| Account      | HTTP 403 status, HTTP 500, other GraphQL error | dashboard shows read state "Could not load resource", no alert                                              | list        |
+| Failing call | Response                                       | Expected UI (current behavior)                                                                              | Back button         |
+| ------------ | ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------- |
+| AccountInfo  | HTTP 404                                       | `/error/404`, only the error view, no side nav, no alert; account children and Account read never requested | list, then overview |
+| AccountInfo  | GraphQL error with "forbidden"                 | `/error/403`, same as above                                                                                 | list, then overview |
+| AccountInfo  | HTTP 403 status, HTTP 500, other GraphQL error | alert `Failed to read account info.` + error detail; dashboard still renders                                | list, then overview |
+| Account      | HTTP 404 / GraphQL "forbidden"                 | `/error/404` / `/error/403`, only the error view, no alert (dashboard history entry replaced)               | list, then overview |
+| Account      | HTTP 403 status, HTTP 500, other GraphQL error | dashboard shows read state "Could not load resource", no alert                                              | list, then overview |
 
 Why: `ErrorHandlerService.redirectToErrorPage` redirects only for `statusCode === 404` or a message containing `forbidden` / `access denied`. A plain HTTP 403 becomes Apollo `ServerError: Response not successful: Received status code 403`, which matches neither. The user decided to test both 403 shapes and to pin the current behavior for 500 / other errors.
 
 "Only the error page is rendered" is checked by decoding Luigi's web component tags (`luigi-wc-<hex of view URL>`) inside `.wcContainer` (`PortalShell.renderedViews()` must equal `['error-component']`), plus the account's `dashboard_dashboard` nav item being hidden and the request log.
 
-Mutation checks done when the tests were written: removing `abandonPendingNavigation()` in `NodeContextProcessingServiceImpl` fails both AccountInfo redirect tests (URL stays on the dashboard); forcing `replaceHistory = true` fails their back-button step (`about:blank`).
+Mutation checks done when the tests were written: removing `abandonPendingNavigation()` in `NodeContextProcessingServiceImpl` fails both AccountInfo redirect tests (URL stays on the dashboard); forcing `replaceHistory = true` fails their back-button step (Back lands on the overview instead of the list).

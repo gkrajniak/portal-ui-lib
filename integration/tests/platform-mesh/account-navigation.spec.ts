@@ -4,6 +4,7 @@ import { AccountDashboardPage } from '../../pages/account-dashboard.page.ts';
 import { AccountsListPage } from '../../pages/accounts-list.page.ts';
 import { ErrorPage } from '../../pages/error.page.ts';
 import type { ErrorPageCode } from '../../pages/error.page.ts';
+import { OverviewPage } from '../../pages/overview.page.ts';
 import { PortalShell } from '../../pages/portal-shell.ts';
 import type { Page } from '@playwright/test';
 
@@ -83,7 +84,12 @@ test.describe('account navigation from the accounts list', () => {
     errorPage = new ErrorPage(page);
     portalShell = new PortalShell(page);
 
-    await accountsList.open();
+    await portalShell.open();
+    await expectOverviewShown(page);
+
+    await portalShell.navigationItem(AccountsListPage.navigation).click();
+
+    await expectAccountsListShown(page);
     for (const accountName of listedAccounts) {
       await expect(accountsList.accountRow(accountName)).toBeVisible();
     }
@@ -104,7 +110,7 @@ test.describe('account navigation from the accounts list', () => {
       `Display name of ${selectedAccount}`,
     );
     await expect(
-      portalShell.navigationItem('dashboard', 'Dashboard'),
+      portalShell.navigationItem(AccountDashboardPage.navigation),
     ).toBeVisible();
     await expect
       .poll(() => portalShell.renderedViews())
@@ -117,9 +123,7 @@ test.describe('account navigation from the accounts list', () => {
       portalBackend.requestsTo('accountRead', selectedAccount),
     ).toHaveLength(1);
 
-    await page.goBack();
-
-    await expectAccountsListShown(page);
+    await expectBackNavigationToListThenOverview(page);
   });
 
   test.describe('when reading the account info fails', () => {
@@ -145,9 +149,7 @@ test.describe('account navigation from the accounts list', () => {
           'the account view must not be rendered',
         ).toHaveLength(0);
 
-        await page.goBack();
-
-        await expectAccountsListShown(page);
+        await expectBackNavigationToListThenOverview(page);
       });
     }
 
@@ -179,9 +181,7 @@ test.describe('account navigation from the accounts list', () => {
           .poll(() => portalShell.renderedViews())
           .toEqual([AccountDashboardPage.viewName]);
 
-        await page.goBack();
-
-        await expectAccountsListShown(page);
+        await expectBackNavigationToListThenOverview(page);
       });
     }
   });
@@ -204,9 +204,7 @@ test.describe('account navigation from the accounts list', () => {
           portalBackend.requestsTo('accountRead', selectedAccount),
         ).toHaveLength(1);
 
-        await page.goBack();
-
-        await expectAccountsListShown(page);
+        await expectBackNavigationToListThenOverview(page);
       });
     }
 
@@ -236,9 +234,7 @@ test.describe('account navigation from the accounts list', () => {
           .toEqual([AccountDashboardPage.viewName]);
         await expect(portalShell.alert).toHaveCount(0);
 
-        await page.goBack();
-
-        await expectAccountsListShown(page);
+        await expectBackNavigationToListThenOverview(page);
       });
     }
   });
@@ -253,16 +249,34 @@ test.describe('account navigation from the accounts list', () => {
       .poll(() => portalShell.renderedViews())
       .toEqual([ErrorPage.viewName]);
     await expect(
-      portalShell.navigationItem('dashboard', 'Dashboard'),
+      portalShell.navigationItem(AccountDashboardPage.navigation),
     ).toBeHidden();
     await expect(portalShell.alert).toHaveCount(0);
   }
 
+  async function expectOverviewShown(page: Page) {
+    await expect(page).toHaveURL(OverviewPage.path);
+    await expect(
+      portalShell.navigationItem(OverviewPage.navigation),
+    ).toHaveClass(PortalShell.selectedNavigationItemClass);
+  }
+
   async function expectAccountsListShown(page: Page) {
     await expect(page).toHaveURL(AccountsListPage.path);
+    await expect(
+      portalShell.navigationItem(AccountsListPage.navigation),
+    ).toHaveClass(PortalShell.selectedNavigationItemClass);
     await expect(accountsList.accountRow(selectedAccount)).toBeVisible();
     await expect
       .poll(() => portalShell.renderedViews())
       .toEqual([AccountsListPage.viewName]);
+  }
+
+  async function expectBackNavigationToListThenOverview(page: Page) {
+    await page.goBack();
+    await expectAccountsListShown(page);
+
+    await page.goBack();
+    await expectOverviewShown(page);
   }
 });
