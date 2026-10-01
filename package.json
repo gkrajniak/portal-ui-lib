@@ -20,9 +20,12 @@
     "build:wc:dev": "ng build wc --configuration development && npm run build:wc:bundle && npm run build:wc:copy",
     "build:watch": "mkdirp dist && nodemon",
     "watch": "npm run build --watch --configuration development",
-    "test": "ng test --watch=false",
+    "test": "ng test --watch=false && npm run test:integration",
     "test:lib": "ng test lib --watch=false",
-    "test:wc": "ng test wc --watch=false"
+    "test:wc": "ng test wc --watch=false",
+    "test:integration": "npm run build:wc && playwright test --config integration/playwright.config.ts",
+    "test:integration:v": "PLAYWRIGHT_VIDEO=on npm run test:integration",
+    "test:integration:ui": "playwright test --config integration/playwright.config.ts --ui"
   },
   "prettier": "@openmfp/config-prettier",
   "dependencies": {
@@ -50,6 +53,7 @@
     "@openmfp/config-prettier": "0.9.2",
     "@openmfp/ngx": "1.8.0",
     "@openmfp/portal-ui-lib": "0.197.1",
+    "@playwright/test": "1.63.0",
     "@types/node": "24.13.3",
     "@vitest/coverage-v8": "4.1.11",
     "cpx2": "9.0.0",
