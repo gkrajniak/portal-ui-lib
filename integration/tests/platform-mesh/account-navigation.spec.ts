@@ -245,6 +245,8 @@ test.describe('account navigation from the accounts list', () => {
   ) {
     await expect(page).toHaveURL(ErrorPage.path(errorPageCode));
     await expect(errorPage.title).toHaveText(ErrorPage.titles[errorPageCode]);
+    await expect(errorPage.illustration(errorPageCode)).toBeVisible();
+    await expect(errorPage.illustrationDrawing(errorPageCode)).toBeVisible();
     await expect
       .poll(() => portalShell.renderedViews())
       .toEqual([ErrorPage.viewName]);
