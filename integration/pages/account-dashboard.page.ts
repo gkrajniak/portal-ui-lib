@@ -3,7 +3,6 @@ import type { Locator, Page } from '@playwright/test';
 
 export class AccountDashboardPage {
   static readonly viewName = 'generic-detail-view';
-  static readonly readFailedTitle = 'Could not load resource';
   static readonly navigation: NavigationNode = {
     pathSegment: 'dashboard',
     label: 'Dashboard',

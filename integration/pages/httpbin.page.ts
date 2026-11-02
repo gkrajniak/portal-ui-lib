@@ -4,7 +4,6 @@ import type { Locator, Page } from '@playwright/test';
 
 export class HttpBinPage {
   static readonly viewName = 'generic-detail-view';
-  static readonly readFailedTitle = 'Could not load resource';
   static readonly readFailedSubtitle = 'Please try again.';
   static readonly namespacesReadFailedAlert = 'Failed to read namespaces.';
   static readonly namespaceMissingSubtitle =
@@ -28,7 +27,6 @@ export class HttpBinPage {
   ];
 
   readonly readState: Locator;
-  readonly retryButton: Locator;
   readonly namespaceSelect: Locator;
   readonly namespaceRefreshButton: Locator;
   private readonly page: Page;
@@ -36,7 +34,6 @@ export class HttpBinPage {
   constructor(page: Page) {
     this.page = page;
     this.readState = page.getByTestId('generic-detail-view-read-state');
-    this.retryButton = page.getByTestId('generic-detail-view-retry');
     this.namespaceSelect = page.getByTestId(
       'generic-detail-view-namespace-select',
     );
