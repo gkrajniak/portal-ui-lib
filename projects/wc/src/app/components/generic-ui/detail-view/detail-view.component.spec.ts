@@ -2580,7 +2580,7 @@ describe('DetailViewComponent template', () => {
 
     expect(find('mfp-dashboard').loading).toBe(true);
     expect(component.customActions()).toEqual([]);
-    expect(find('[data-testid="generic-detail-view-read-state"]')).toBeNull();
+    expect(find('[data-testid="generic-detail-view-error-state"]')).toBeNull();
     initial.error(new Error('Gateway unavailable'));
     fixture.detectChanges();
 

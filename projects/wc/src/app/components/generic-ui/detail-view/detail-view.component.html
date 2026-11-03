@@ -1,6 +1,6 @@
 @if (viewState() === 'error') {
   <pm-error-state
-    data-testid="generic-detail-view-read-state"
+    data-testid="generic-detail-view-error-state"
     [code]="readErrorCode()"
     [subtitle]="
       showNamespaceSelection() ? 'Select a namespace and try again.' : undefined

@@ -1,7 +1,7 @@
 @let failure = readFailure();
 @if (failure) {
   <pm-error-state
-    data-testid="generic-list-view-read-state"
+    data-testid="generic-list-view-error-state"
     [code]="failure.code"
     (retry)="failure.retry()"
   />

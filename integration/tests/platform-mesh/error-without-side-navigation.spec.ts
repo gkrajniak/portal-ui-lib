@@ -83,7 +83,7 @@ test.describe('a node without side navigation', () => {
       await expect(fullPage.field('spec.displayName')).toContainText(
         `Display name of ${selectedAccount}`,
       );
-      await expect(fullPage.readState).toHaveCount(0);
+      await expect(fullPage.errorState).toHaveCount(0);
       await portalShell.expectNoSideNavigation();
     });
 
@@ -110,7 +110,7 @@ test.describe('a node without side navigation', () => {
       await expect(fullPage.field('spec.displayName')).toContainText(
         `Display name of ${selectedAccount}`,
       );
-      await expect(fullPage.readState).toHaveCount(0);
+      await expect(fullPage.errorState).toHaveCount(0);
     });
 
     test('shows a resource pending deletion without a retry', async ({

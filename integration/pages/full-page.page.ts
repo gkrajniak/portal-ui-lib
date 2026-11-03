@@ -3,12 +3,12 @@ import type { Locator, Page } from '@playwright/test';
 export class FullPagePage {
   static readonly viewName = 'generic-detail-view';
 
-  readonly readState: Locator;
+  readonly errorState: Locator;
   private readonly page: Page;
 
   constructor(page: Page) {
     this.page = page;
-    this.readState = page.getByTestId('generic-detail-view-read-state');
+    this.errorState = page.getByTestId('generic-detail-view-error-state');
   }
 
   static path(accountName: string): string {

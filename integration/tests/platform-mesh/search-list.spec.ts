@@ -67,7 +67,7 @@ test.describe('search list page', () => {
 
     await expectHeaderShown();
     await expectWidgetsShown();
-    await expect(searchList.readState).toHaveCount(0);
+    await expect(searchList.errorState).toHaveCount(0);
     await expectStaysOnSearchList(page);
     await expect(portalShell.alert).toHaveCount(0);
   });
@@ -119,7 +119,7 @@ test.describe('search list page', () => {
       await errorPage.retryButton.click();
 
       await expectWidgetsShown();
-      await expect(searchList.readState).toHaveCount(0);
+      await expect(searchList.errorState).toHaveCount(0);
     });
   });
 
@@ -160,7 +160,7 @@ test.describe('search list page', () => {
       await searchList.search('widget');
 
       await expectWidgetsShown();
-      await expect(searchList.readState).toHaveCount(0);
+      await expect(searchList.errorState).toHaveCount(0);
       await expect(page).toHaveURL(
         (url) => url.searchParams.get('q') === 'widget',
       );

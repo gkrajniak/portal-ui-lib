@@ -442,7 +442,7 @@ test.describe('account navigation from the accounts list', () => {
       await errorPage.retryButton.click();
 
       await expectAccountDashboardShown(page, selectedAccount);
-      await expect(accountDashboard.readState).toHaveCount(0);
+      await expect(accountDashboard.errorState).toHaveCount(0);
     });
   });
 

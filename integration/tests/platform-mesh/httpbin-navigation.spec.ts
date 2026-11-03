@@ -293,7 +293,7 @@ test.describe('when reading the httpbin fails', () => {
       `${dashboardPath}?${namespaceSearchParam}=${selectedHttpBinNamespace}`,
     );
     await expect(errorPage.retryButton).not.toHaveAttribute('disabled');
-    await expect(httpBin.readState).toBeVisible();
+    await expect(httpBin.errorState).toBeVisible();
     expect(httpBinReadNamespaces(portalBackend)).toEqual([undefined]);
 
     portalBackend.respondToHttpBinRead(
@@ -410,7 +410,7 @@ test.describe('when reading the httpbin fails', () => {
 
   async function expectHttpBinShown(page: Page, path: string) {
     await expect(httpBin.field('metadata.name')).toContainText(selectedHttpBin);
-    await expect(httpBin.readState).toHaveCount(0);
+    await expect(httpBin.errorState).toHaveCount(0);
     await expect(page).toHaveURL(path);
   }
 

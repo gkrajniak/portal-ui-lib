@@ -96,7 +96,7 @@
     }
     @if (error(); as listError) {
       <pm-error-state
-        data-testid="search-list-read-state"
+        data-testid="search-list-error-state"
         [code]="listError.status!"
         [subtitle]="listError.message"
         [retryable]="!!listError.withRetryButton"

@@ -830,7 +830,7 @@ A full-page list view using the SAP Fiori `ui5-dynamic-page` layout. Use it when
 | `search-list-clear-icon`               | Clear search icon                                      | Hidden when input is empty                                                                                                 |
 | `search-list-tab-container`            | Filter tab strip                                       | Only rendered when `listView.filters` is set                                                                               |
 | `search-list-tab-{i}`                  | Individual filter tab at index `i`                     | Dynamic — `i` is 0-based                                                                                                   |
-| `search-list-read-state`               | `pm-error-state` shown instead of the table            | Only rendered when a request fails                                                                                         |
+| `search-list-error-state`              | `pm-error-state` shown instead of the table            | Only rendered when a request fails                                                                                         |
 | `search-list-table`                    | `mfp-declarative-table`                                | Internal table elements use `generic-table-*` test IDs from `@openmfp/ngx`                                                 |
 | `search-list-create-modal`             | `pm-resource-form-modal`                               | The facade wraps `mfp-resource-form-dialog` from `@openmfp/ngx`; internal dialog elements use `create-resource-*` test IDs |
 

@@ -275,14 +275,14 @@ describe('ListViewComponent read failure', () => {
   });
 
   it('shows the dashboard without an error state while there is no failure', () => {
-    expect(find('[data-testid="generic-list-view-read-state"]')).toBeNull();
+    expect(find('[data-testid="generic-list-view-error-state"]')).toBeNull();
     expect(find('mfp-dashboard').style.display).toBe('');
   });
 
   it('shows only the error state with the code of the failure', () => {
     reportReadFailure({ code: 403, retry: vi.fn() });
 
-    expect(find('[data-testid="generic-list-view-read-state"]').code).toBe(403);
+    expect(find('[data-testid="generic-list-view-error-state"]').code).toBe(403);
     expect(find('mfp-dashboard').style.display).toBe('none');
   });
 
@@ -290,7 +290,7 @@ describe('ListViewComponent read failure', () => {
     const retry = vi.fn();
     reportReadFailure({ code: 500, retry });
 
-    find('[data-testid="generic-list-view-read-state"]').dispatchEvent(
+    find('[data-testid="generic-list-view-error-state"]').dispatchEvent(
       new CustomEvent('retry'),
     );
 
@@ -302,7 +302,7 @@ describe('ListViewComponent read failure', () => {
 
     reportReadFailure(null);
 
-    expect(find('[data-testid="generic-list-view-read-state"]')).toBeNull();
+    expect(find('[data-testid="generic-list-view-error-state"]')).toBeNull();
     expect(find('mfp-dashboard').style.display).toBe('');
   });
 });

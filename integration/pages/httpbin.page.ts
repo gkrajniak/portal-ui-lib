@@ -26,14 +26,14 @@ export class HttpBinPage {
     HttpBinPage.status,
   ];
 
-  readonly readState: Locator;
+  readonly errorState: Locator;
   readonly namespaceSelect: Locator;
   readonly namespaceRefreshButton: Locator;
   private readonly page: Page;
 
   constructor(page: Page) {
     this.page = page;
-    this.readState = page.getByTestId('generic-detail-view-read-state');
+    this.errorState = page.getByTestId('generic-detail-view-error-state');
     this.namespaceSelect = page.getByTestId(
       'generic-detail-view-namespace-select',
     );

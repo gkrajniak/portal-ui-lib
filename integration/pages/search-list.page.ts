@@ -14,7 +14,7 @@ export class SearchListPage {
   readonly clearSearchIcon: Locator;
   readonly tabs: Locator;
   readonly table: Locator;
-  readonly readState: Locator;
+  readonly errorState: Locator;
   private readonly page: Page;
 
   constructor(page: Page) {
@@ -25,7 +25,7 @@ export class SearchListPage {
     this.clearSearchIcon = page.getByTestId('search-list-clear-icon');
     this.tabs = page.getByTestId('search-list-tab-container');
     this.table = page.getByTestId('search-list-table');
-    this.readState = page.getByTestId('search-list-read-state');
+    this.errorState = page.getByTestId('search-list-error-state');
   }
 
   static path(accountName: string): string {
