@@ -17,6 +17,6 @@ concurrency:
 
 jobs:
   pr-title:
-    uses: platform-mesh/.github/.github/workflows/job-pr-title.yml@4c74c1cdaa4813c703921a66d6751f2c3f3116a6
+    uses: platform-mesh/.github/.github/workflows/job-pr-title.yml@dcc1039ea425e209cae9a6aa2339f71798406724
     permissions:
-      pull-requests: read
+      pull-requests: read # Needed to read the pull request title
