@@ -2,8 +2,8 @@ name: release
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v*'
 
 permissions:
   contents: read
@@ -13,35 +13,37 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
-    uses: platform-mesh/.github/.github/workflows/job-node-test.yml@33d3ee309a70b300c1775d78054cbb9215673b7b
-    secrets: inherit # zizmor: ignore[secrets-inherit]
-
-  create-version:
-    uses: platform-mesh/.github/.github/workflows/job-create-version.yml@33d3ee309a70b300c1775d78054cbb9215673b7b
-    secrets: inherit # zizmor: ignore[secrets-inherit]
+  version:
+    uses: platform-mesh/.github/.github/workflows/job-tag-version.yml@4c74c1cdaa4813c703921a66d6751f2c3f3116a6
     permissions:
-      contents: write # Needed to commit and push the bumped version
+      contents: read
+
+  build:
+    needs: [version]
+    uses: platform-mesh/.github/.github/workflows/job-node-test.yml@4c74c1cdaa4813c703921a66d6751f2c3f3116a6
+    secrets: inherit # zizmor: ignore[secrets-inherit]
 
   publish:
-    needs: [create-version, build]
-    runs-on: ubuntu-latest
-    environment: npmjs:@platform-mesh/portal-ui-lib
+    needs: [version, build]
+    uses: platform-mesh/.github/.github/workflows/job-node-publish.yml@4c74c1cdaa4813c703921a66d6751f2c3f3116a6
+    secrets: inherit # zizmor: ignore[secrets-inherit]
     permissions:
+      contents: read
       id-token: write # Needed for npm provenance via OIDC when publishing
-    env:
-      VERSION: ${{ needs.create-version.outputs.strictVersion }}
-    steps:
-      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
-        with:
-          node-version: '24'
-          registry-url: https://registry.npmjs.org
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
-        with:
-          name: target
-          path: dist
-      - name: Publish
-        run: |
-          npm version "${VERSION}"
-          npm publish --provenance --access public
-        working-directory: dist
+    with:
+      version: ${{ needs.version.outputs.version }}
+      distTag: ${{ needs.version.outputs.distTag }}
+      publishFromDist: true
+      commitVersion: false
+      environment: npmjs:@platform-mesh/portal-ui-lib
+
+  github-release:
+    needs: [version, publish]
+    uses: platform-mesh/.github/.github/workflows/job-github-release.yml@4c74c1cdaa4813c703921a66d6751f2c3f3116a6
+    permissions:
+      contents: write
+    with:
+      tag: ${{ needs.version.outputs.tag }}
+      previousTag: ${{ needs.version.outputs.previousTag }}
+      prerelease: ${{ needs.version.outputs.prerelease == 'true' }}
+      latest: ${{ needs.version.outputs.latest == 'true' }}

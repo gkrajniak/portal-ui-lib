@@ -17,6 +17,7 @@ You are welcome to contribute with your pull requests. These steps explain the c
 1. If you've changed APIs, update the documentation.
 1. Make sure the tests pass. Our GitHub actions pipeline is running the unit and e2e tests for your PR and will indicate any issues.
 1. Sign the Developer Certificate of Origin (DCO).
+1. Give the pull request a [Conventional Commits](https://www.conventionalcommits.org/) title, for example `feat: add search to the list view` or `fix: keep filters after reload`. The title becomes the squash commit message and the entry in the release notes.
 
 ### Building
 
@@ -28,6 +29,29 @@ The build artifacts will be stored in the `dist/` directory.
 > **NOTE:** You should always add tests, if you are adding code to our repository.
 
 Run `npm test` to execute the unit tests via [Jest](https://jestjs.io/) in the root directory of the repository.
+
+## Releasing
+
+Merging to `main` does not publish anything. A release is created by pushing a version tag:
+
+```sh
+git switch main
+git pull
+git tag v1.2.0
+git push origin v1.2.0
+```
+
+- Use `vX.Y.Z` for a release and `vX.Y.Z-rc.N` for a release candidate.
+- Tag a commit on `main`, or on a maintenance branch `release/X.Y` for patch releases of an older version. A maintenance branch only accepts `X.Y.*` versions of its own line.
+- The version must be higher than the last release on the same branch.
+
+The release workflow publishes `@platform-mesh/portal-ui-lib` to npm and creates a GitHub release with notes generated from the commit titles:
+
+| Tag | Branch | npm dist-tag | GitHub release |
+|---|---|---|---|
+| `vX.Y.Z` | `main` | `latest` | latest |
+| `vX.Y.Z-rc.N` | `main` or `release/X.Y` | `next` | pre-release |
+| `vX.Y.Z` | `release/X.Y` | `release-X.Y` | release |
 
 ## Issues
 
