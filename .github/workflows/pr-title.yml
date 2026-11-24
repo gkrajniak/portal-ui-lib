@@ -17,4 +17,4 @@ concurrency:
 
 jobs:
   pr-title:
-    uses: platform-mesh/.github/.github/workflows/job-pr-title.yml@8cd626401b8458c4d057740ba5ab8ce8c5df1b7a
+    uses: platform-mesh/.github/.github/workflows/job-pr-title.yml@2baf2ece1faa3b2f54670e25655c5d2e608d7794
