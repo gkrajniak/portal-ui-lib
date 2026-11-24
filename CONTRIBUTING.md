@@ -50,8 +50,9 @@ The release workflow publishes `@platform-mesh/portal-ui-lib` to npm and creates
 | Tag | Branch | npm dist-tag | GitHub release |
 |---|---|---|---|
 | `vX.Y.Z` | `main` | `latest` | latest |
-| `vX.Y.Z-rc.N` | `main` or `release/X.Y` | `next` | pre-release |
+| `vX.Y.Z-rc.N` | `main` | `next` | pre-release |
 | `vX.Y.Z` | `release/X.Y` | `release-X.Y` | release |
+| `vX.Y.Z-rc.N` | `release/X.Y` | `release-X.Y-next` | pre-release |
 
 ## Issues
 
