@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g. 1.2.0 or 1.2.0-rc.1). The tag is created on the latest commit of the selected branch.'
+        type: string
+        required: true
 
 permissions:
   contents: read
@@ -13,19 +19,30 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  tag:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    uses: platform-mesh/.github/.github/workflows/job-tag-version.yml@8cd626401b8458c4d057740ba5ab8ce8c5df1b7a
+    permissions:
+      contents: read
+    with:
+      version: ${{ inputs.version }}
+    secrets:
+      PM_PUBLISHER_PRIVATE_KEY: ${{ secrets.PM_PUBLISHER_PRIVATE_KEY }}
+
   version:
-    uses: platform-mesh/.github/.github/workflows/job-tag-version.yml@3bfaea3b0850978a4cbca35206a41e54084fb3a1
+    if: ${{ github.event_name == 'push' }}
+    uses: platform-mesh/.github/.github/workflows/job-tag-version.yml@8cd626401b8458c4d057740ba5ab8ce8c5df1b7a
     permissions:
       contents: read
 
   build:
     needs: [version]
-    uses: platform-mesh/.github/.github/workflows/job-node-test.yml@3bfaea3b0850978a4cbca35206a41e54084fb3a1
+    uses: platform-mesh/.github/.github/workflows/job-node-test.yml@8cd626401b8458c4d057740ba5ab8ce8c5df1b7a
     secrets: inherit # zizmor: ignore[secrets-inherit]
 
   publish:
     needs: [version, build]
-    uses: platform-mesh/.github/.github/workflows/job-node-publish.yml@3bfaea3b0850978a4cbca35206a41e54084fb3a1
+    uses: platform-mesh/.github/.github/workflows/job-node-publish.yml@8cd626401b8458c4d057740ba5ab8ce8c5df1b7a
     secrets: inherit # zizmor: ignore[secrets-inherit]
     permissions:
       contents: read
@@ -39,7 +56,7 @@ jobs:
 
   github-release:
     needs: [version, publish]
-    uses: platform-mesh/.github/.github/workflows/job-github-release.yml@3bfaea3b0850978a4cbca35206a41e54084fb3a1
+    uses: platform-mesh/.github/.github/workflows/job-github-release.yml@8cd626401b8458c4d057740ba5ab8ce8c5df1b7a
     permissions:
       contents: write # Needed to create the GitHub release
     with:

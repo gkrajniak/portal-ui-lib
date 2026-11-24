@@ -32,7 +32,9 @@ Run `npm test` to execute the unit tests via [Jest](https://jestjs.io/) in the r
 
 ## Releasing
 
-Merging to `main` does not publish anything. A release is created by pushing a version tag:
+Merging to `main` does not publish anything. A release is created by a version tag. To create the tag from GitHub, open **Actions → release → Run workflow**, select the branch and enter the version, for example `1.2.0` or `1.2.0-rc.1`. The workflow checks the version, tags the latest commit of the branch and starts the release for the tag.
+
+You can also push the tag yourself:
 
 ```sh
 git switch main
