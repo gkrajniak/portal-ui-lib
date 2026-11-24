@@ -21,28 +21,31 @@ concurrency:
 jobs:
   tag:
     if: ${{ github.event_name == 'workflow_dispatch' }}
-    uses: platform-mesh/.github/.github/workflows/job-tag-version.yml@2baf2ece1faa3b2f54670e25655c5d2e608d7794
+    uses: platform-mesh/.github/.github/workflows/job-tag-version.yml@e3d595b1be2ddc3a440dbe1591677e82e75d69e5
     permissions:
       contents: read
     with:
       version: ${{ inputs.version }}
+      versionFiles: package.json projects/lib/package.json
     secrets:
       PM_PUBLISHER_PRIVATE_KEY: ${{ secrets.PM_PUBLISHER_PRIVATE_KEY }}
 
   version:
     if: ${{ github.event_name == 'push' }}
-    uses: platform-mesh/.github/.github/workflows/job-tag-version.yml@2baf2ece1faa3b2f54670e25655c5d2e608d7794
+    uses: platform-mesh/.github/.github/workflows/job-tag-version.yml@e3d595b1be2ddc3a440dbe1591677e82e75d69e5
     permissions:
       contents: read
+    with:
+      versionFiles: package.json projects/lib/package.json
 
   build:
     needs: [version]
-    uses: platform-mesh/.github/.github/workflows/job-node-test.yml@2baf2ece1faa3b2f54670e25655c5d2e608d7794
+    uses: platform-mesh/.github/.github/workflows/job-node-test.yml@e3d595b1be2ddc3a440dbe1591677e82e75d69e5
     secrets: inherit # zizmor: ignore[secrets-inherit]
 
   publish:
     needs: [version, build]
-    uses: platform-mesh/.github/.github/workflows/job-node-publish.yml@2baf2ece1faa3b2f54670e25655c5d2e608d7794
+    uses: platform-mesh/.github/.github/workflows/job-node-publish.yml@e3d595b1be2ddc3a440dbe1591677e82e75d69e5
     secrets: inherit # zizmor: ignore[secrets-inherit]
     permissions:
       contents: read
@@ -56,7 +59,7 @@ jobs:
 
   github-release:
     needs: [version, publish]
-    uses: platform-mesh/.github/.github/workflows/job-github-release.yml@2baf2ece1faa3b2f54670e25655c5d2e608d7794
+    uses: platform-mesh/.github/.github/workflows/job-github-release.yml@e3d595b1be2ddc3a440dbe1591677e82e75d69e5
     permissions:
       contents: write # Needed to create the GitHub release
     with:

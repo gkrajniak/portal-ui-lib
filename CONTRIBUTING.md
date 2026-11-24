@@ -32,7 +32,18 @@ Run `npm test` to execute the unit tests via [Jest](https://jestjs.io/) in the r
 
 ## Releasing
 
-Merging to `main` does not publish anything. A release is created by a version tag. To create the tag from GitHub, open **Actions → release → Run workflow**, select the branch and enter the version, for example `1.2.0` or `1.2.0-rc.1`. The workflow checks the version, tags the latest commit of the branch and starts the release for the tag.
+Merging to `main` does not publish anything. A release takes two steps.
+
+First, set the release version in `package.json` and `projects/lib/package.json` in a pull request and merge it:
+
+```sh
+npm version 1.2.0 --no-git-tag-version
+(cd projects/lib && npm version 1.2.0 --no-git-tag-version)
+```
+
+The release fails when the version in these files differs from the tag, so a checkout of a release tag always shows the published version. A release candidate needs its own version too, for example `1.2.0-rc.1`.
+
+Then create the version tag. To create the tag from GitHub, open **Actions → release → Run workflow**, select the branch and enter the version, for example `1.2.0` or `1.2.0-rc.1`. The workflow checks the version, tags the latest commit of the branch and starts the release for the tag.
 
 You can also push the tag yourself:
 
