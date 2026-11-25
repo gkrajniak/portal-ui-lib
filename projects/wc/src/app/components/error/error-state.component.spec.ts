@@ -28,7 +28,9 @@ describe('ErrorState', () => {
   let fixture: ComponentFixture<ErrorStateHost>;
 
   const element = (testId: string) =>
-    fixture.nativeElement.querySelector(`[data-testid="${testId}"]`);
+    fixture.nativeElement
+      .querySelector('mfp-error-view')
+      .shadowRoot.querySelector(`[data-testid="${testId}"]`);
 
   const render = async (code: number) => {
     fixture.componentInstance.code.set(code);
@@ -122,16 +124,23 @@ describe('ErrorState', () => {
   it('renders the content of the view above the action', async () => {
     await render(500);
 
-    const actions = element('error-view-retry').parentElement;
+    const content = fixture.nativeElement.querySelector(
+      '[data-testid="projected-content"]',
+    );
+    const slot = content.assignedSlot;
+    const actions = slot.parentElement;
 
-    expect(actions.firstElementChild.dataset.testid).toBe('projected-content');
+    expect(actions.firstElementChild).toBe(slot);
+    expect(
+      actions.lastElementChild.contains(element('error-view-button-retry')),
+    ).toBe(true);
   });
 
   describe('retry', () => {
     it('reports a click to the view', async () => {
       await render(500);
 
-      element('error-view-retry').click();
+      element('error-view-button-retry').click();
 
       expect(fixture.componentInstance.retries).toBe(1);
     });
@@ -141,7 +150,7 @@ describe('ErrorState', () => {
 
       await render(500);
 
-      expect(element('error-view-retry').disabled).toBe(true);
+      expect(element('error-view-button-retry').disabled).toBe(true);
     });
 
     it('is absent when the view cannot retry', async () => {
@@ -149,8 +158,8 @@ describe('ErrorState', () => {
 
       await render(500);
 
-      expect(element('error-view-retry')).toBeNull();
-      expect(element('error-view-sign-in')).toBeNull();
+      expect(element('error-view-button-retry')).toBeNull();
+      expect(element('error-view-button-sign-in')).toBeNull();
     });
   });
 
@@ -158,8 +167,10 @@ describe('ErrorState', () => {
     it('offers to log in again instead of a retry', async () => {
       await render(401);
 
-      expect(element('error-view-retry')).toBeNull();
-      expect(element('error-view-sign-in').textContent.trim()).toBe('Login');
+      expect(element('error-view-button-retry')).toBeNull();
+      expect(element('error-view-button-sign-in').textContent.trim()).toBe(
+        'Login',
+      );
     });
 
     it('signs in again from a click on the login button', async () => {
@@ -170,7 +181,7 @@ describe('ErrorState', () => {
         .spyOn(errorState as any, 'signIn')
         .mockImplementation(() => {});
 
-      element('error-view-sign-in').click();
+      element('error-view-button-sign-in').click();
 
       expect(signIn).toHaveBeenCalledTimes(1);
       expect(fixture.componentInstance.retries).toBe(0);
@@ -181,7 +192,7 @@ describe('ErrorState', () => {
 
       await render(401);
 
-      expect(element('error-view-sign-in')).toBeNull();
+      expect(element('error-view-button-sign-in')).toBeNull();
     });
   });
 });
