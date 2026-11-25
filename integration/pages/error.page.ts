@@ -49,8 +49,8 @@ export class ErrorPage {
   constructor(page: Page) {
     this.title = page.getByTestId('error-view-title');
     this.subtitle = page.getByTestId('error-view-subtitle');
-    this.retryButton = page.getByTestId('error-view-retry');
-    this.signInButton = page.getByTestId('error-view-sign-in');
+    this.retryButton = page.getByTestId('error-view-button-retry');
+    this.signInButton = page.getByTestId('error-view-button-sign-in');
     this.illustratedMessage = page.getByTestId('error-view-illustration');
   }
 

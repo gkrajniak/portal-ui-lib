@@ -1,4 +1,3 @@
-import { ErrorConfig } from './models/error.model';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -8,9 +7,7 @@ import {
   output,
   resource,
 } from '@angular/core';
-import { IllustratedMessage } from '@fundamental-ngx/ui5-webcomponents-fiori/illustrated-message';
-import { Button } from '@fundamental-ngx/ui5-webcomponents/button';
-import { Title } from '@fundamental-ngx/ui5-webcomponents/title';
+import { ErrorView, ErrorViewButton, ErrorViewConfig } from '@openmfp/ngx';
 import { I18nService } from '@openmfp/portal-ui-lib';
 import '@ui5/webcomponents-fiori/dist/illustrations/NoEntries.js';
 import '@ui5/webcomponents-fiori/dist/illustrations/UnableToLoad.js';
@@ -21,16 +18,8 @@ import '@ui5/webcomponents-fiori/dist/illustrations/tnt/UnsuccessfulAuth.js';
   selector: 'pm-error-state',
   standalone: true,
   templateUrl: './error-state.component.html',
-  styles: `
-    .error-state-actions {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.5rem;
-    }
-  `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [IllustratedMessage, Title, Button],
+  imports: [ErrorView],
 })
 export class ErrorState {
   private i18nService = inject(I18nService);
@@ -58,53 +47,84 @@ export class ErrorState {
     }),
   });
 
-  protected config = computed<ErrorConfig>(() => {
+  protected statusContent = computed<ErrorViewConfig>(() => {
     switch (this.code()) {
       case 401:
         return {
-          scene: 'tnt/UnsuccessfulAuth',
-          illustratedMessageTitle:
-            this.texts.value()?.sessionExpiredTitle ?? '',
-          illustratedMessageText: this.texts.value()?.sessionExpiredText ?? '',
+          illustration: 'tnt/UnsuccessfulAuth',
+          title: this.texts.value()?.sessionExpiredTitle ?? '',
+          subtitle: this.texts.value()?.sessionExpiredText ?? '',
         };
       case 403:
         return {
-          scene: 'tnt/UnsuccessfulAuth',
-          illustratedMessageTitle:
-            'You are not authorized to access this content.',
-          illustratedMessageText: this.retryable()
+          illustration: 'tnt/UnsuccessfulAuth',
+          title: 'You are not authorized to access this content.',
+          subtitle: this.retryable()
             ? 'If access was just granted, try again.'
             : '',
         };
       case 404:
         return {
-          scene: 'NoEntries',
-          illustratedMessageTitle:
-            this.texts.value()?.contentNotFoundTitle ?? '',
-          illustratedMessageText: this.retryable()
+          illustration: 'NoEntries',
+          title: this.texts.value()?.contentNotFoundTitle ?? '',
+          subtitle: this.retryable()
             ? 'If it was just created, try again. Otherwise, check if the URL is correct.'
             : (this.texts.value()?.contentNotFoundText ?? ''),
         };
       case 422:
         return {
-          scene: 'tnt/NoApplications',
-          illustratedMessageTitle: 'The resource is pending deletion.',
-          illustratedMessageText: '',
+          illustration: 'tnt/NoApplications',
+          title: 'The resource is pending deletion.',
+          subtitle: '',
         };
       case 503:
         return {
-          scene: 'UnableToLoad',
-          illustratedMessageTitle: 'Organization is not ready yet',
-          illustratedMessageText: 'Please try again later.',
+          illustration: 'UnableToLoad',
+          title: 'Organization is not ready yet',
+          subtitle: 'Please try again later.',
         };
       default:
         return {
-          scene: 'UnableToLoad',
-          illustratedMessageTitle: 'Could not load resource',
-          illustratedMessageText: 'Please try again.',
+          illustration: 'UnableToLoad',
+          title: 'Could not load resource',
+          subtitle: 'Please try again.',
         };
     }
   });
+
+  protected buttons = computed<ErrorViewButton[]>(() => {
+    if (!this.retryable()) {
+      return [];
+    }
+    if (this.isSessionExpired()) {
+      return [{ key: 'sign-in', label: 'Login', design: 'Emphasized' }];
+    }
+    return [
+      {
+        key: 'retry',
+        label: 'Retry',
+        design: 'Emphasized',
+        disabled: this.retryDisabled(),
+      },
+    ];
+  });
+
+  protected errorViewConfig = computed<ErrorViewConfig>(() => {
+    const content = this.statusContent();
+    return {
+      ...content,
+      subtitle: this.subtitle() ?? content.subtitle,
+      buttons: this.buttons(),
+    };
+  });
+
+  protected onButtonClick(button: ErrorViewButton): void {
+    if (button.key === 'sign-in') {
+      this.signIn();
+    } else {
+      this.retry.emit();
+    }
+  }
 
   protected signIn(): void {
     window.location.reload();

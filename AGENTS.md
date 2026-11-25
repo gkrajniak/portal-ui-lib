@@ -110,7 +110,7 @@ portal-ui-lib/
 │   │                                  # mergeListWithSubscriptionResult, resource-sanitizer, etc.
 │   └── wc/src/app/
 │       ├── components/
-│       │   ├── error/                 # error-component web component, shared pm-error-state
+│       │   ├── error/                 # error-component web component, shared pm-error-state (renders mfp-error-view from @openmfp/ngx)
 │       │   ├── generic-ui/
 │       │   │   ├── detail-view/       # DetailView component
 │       │   │   ├── generic-form/      # GenericForm, GenericDynamicSelect
@@ -160,7 +160,7 @@ Key internal services:
 
 A failed read never navigates. The user stays on the URL and in the navigation context, and the content area shows the error.
 
-- **A view fails to read** (`DetailView`, `ListView`, `SearchListDynamicPage`): the view renders the shared `pm-error-state` in place. `pm-error-state` owns the action: Retry, which the view can disable or leave out, or for an expired session (401) a login button that reloads the page, which re-runs the token refresh and otherwise the login. Views only add extras such as the namespace selection. There is no Back button: the breadcrumbs lead to the parent. `DetailView` and `ListView` show only the error below the breadcrumbs: `ListView` hides its dashboard, including title and description, and `ResourceTableCard` holds the read logic and reports the failure and its retry through the `readFailureChange` input. `SearchListDynamicPage` replaces only the table and keeps its title, search input and tabs, because a search term that causes the error can only be corrected there.
+- **A view fails to read** (`DetailView`, `ListView`, `SearchListDynamicPage`): the view renders the shared `pm-error-state` in place. `pm-error-state` maps the status code to the illustration, texts and buttons and renders them with `mfp-error-view` from `@openmfp/ngx`. It owns the action: Retry, which the view can disable or leave out, or for an expired session (401) a login button that reloads the page, which re-runs the token refresh and otherwise the login. Views only add extras such as the namespace selection. There is no Back button: the breadcrumbs lead to the parent. `DetailView` and `ListView` show only the error below the breadcrumbs: `ListView` hides its dashboard, including title and description, and `ResourceTableCard` holds the read logic and reports the failure and its retry through the `readFailureChange` input. `SearchListDynamicPage` replaces only the table and keeps its title, search input and tabs, because a search term that causes the error can only be corrected there.
 - **A node fails to load** (`AccountInfo` read, organization not ready, `/rest/config/<entity>`): `NodeContextProcessingServiceImpl` records the code as `ctx.entityErrorCode`, and `CustomNodeProcessingServiceImpl` points the child nodes of the entity at `error-component`, so the selected MFE never loads, iframes included. Without child nodes the entity node itself renders the error and the side navigation falls back to the parent. `errorComponentConfig` turns a failed `/rest/config/<entity>` into the same error.
 - **A write fails** (create, update, delete): `ErrorHandlerService.handleError` alerts and the page stays as it is.
 - **A URL matches no node**: `pageNotFoundHandler` renders the global `/error/404` node with `keepURL`, without a side navigation, because there is no node to stay on.

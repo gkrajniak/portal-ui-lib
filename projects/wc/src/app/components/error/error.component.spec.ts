@@ -8,7 +8,9 @@ describe('ErrorView', () => {
   let luigiCoreServiceMock: MockedObject<LuigiCoreService>;
 
   const element = (testId: string) =>
-    fixture.nativeElement.shadowRoot.querySelector(`[data-testid="${testId}"]`);
+    fixture.nativeElement.shadowRoot
+      .querySelector('mfp-error-view')
+      .shadowRoot.querySelector(`[data-testid="${testId}"]`);
 
   const render = async (context: object) => {
     fixture.componentRef.setInput('context', context);
@@ -46,7 +48,7 @@ describe('ErrorView', () => {
   it('offers no retry on the global error node', async () => {
     await render({ id: '404' });
 
-    expect(element('error-view-retry')).toBeNull();
+    expect(element('error-view-button-retry')).toBeNull();
   });
 
   it('shows the error of a failed entity', async () => {
@@ -68,7 +70,7 @@ describe('ErrorView', () => {
   it('retries a failed entity by re-evaluating the navigation', async () => {
     await render({ entityErrorCode: 500 });
 
-    element('error-view-retry').click();
+    element('error-view-button-retry').click();
 
     expect(luigiCoreServiceMock.configChanged).toHaveBeenCalledTimes(1);
   });
