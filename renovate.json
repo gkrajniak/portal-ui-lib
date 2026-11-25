@@ -1,4 +1,14 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["local>platform-mesh/.github:renovate-config", ":semanticCommits"]
+  "extends": [
+    "local>platform-mesh/.github:renovate-config",
+    ":semanticCommits"
+  ],
+  "packageRules": [
+    {
+      "description": "Replace the range of a peer dependency with the new version instead of widening it with another '|| ^x.y.z'.",
+      "matchDepTypes": ["peerDependencies"],
+      "rangeStrategy": "replace"
+    }
+  ]
 }

@@ -56,7 +56,7 @@
     "@luigi-project/client": "2.33.0",
     "@openmfp/config-prettier": "0.9.3",
     "@openmfp/ngx": "2.0.0",
-    "@openmfp/portal-ui-lib": "0.199.14",
+    "@openmfp/portal-ui-lib": "0.199.27",
     "@playwright/test": "1.63.0",
     "@storybook/angular": "10.6.1",
     "@storybook/angular-vite": "10.6.1",
